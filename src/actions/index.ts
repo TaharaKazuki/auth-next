@@ -72,3 +72,55 @@ export const signUpAction = async (formValues: SignUpSchemaType) => {
     success: 'Email verification sent! Please check your email',
   };
 };
+
+export const verifyEmail = async (token: string) => {
+  const existingToken = await prisma.verificationToken.findUnique({
+    where: { token },
+  });
+
+  if (!existingToken) {
+    return {
+      error: 'Token does not exist',
+    };
+  }
+
+  const isTokenExpired = new Date(existingToken.expires) < new Date();
+
+  if (isTokenExpired) {
+    return {
+      error: 'Token has expired',
+    };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email: existingToken.email },
+  });
+
+  if (!existingToken) {
+    return {
+      error: 'Email does not exist',
+    };
+  }
+
+  const confirmEmailAccount = await prisma.user.update({
+    where: { id: existingUser?.id },
+    data: {
+      emailVerified: new Date(),
+      email: existingToken.email,
+    },
+  });
+
+  const deleteToken =
+    existingToken &&
+    prisma.verificationToken.delete({
+      where: {
+        id: existingToken.id,
+      },
+    });
+
+  await prisma.$transaction([confirmEmailAccount, deleteToken]);
+
+  return {
+    success: 'Email verified',
+  };
+};
