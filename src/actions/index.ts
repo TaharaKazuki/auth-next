@@ -96,27 +96,24 @@ export const verifyEmail = async (token: string) => {
     where: { email: existingToken.email },
   });
 
-  if (!existingToken) {
+  if (!existingUser) {
     return {
       error: 'Email does not exist',
     };
   }
 
-  const confirmEmailAccount = await prisma.user.update({
-    where: { id: existingUser?.id },
+  const confirmEmailAccount = prisma.user.update({
+    where: { id: existingUser.id },
     data: {
       emailVerified: new Date(),
-      email: existingToken.email,
     },
   });
 
-  const deleteToken =
-    existingToken &&
-    prisma.verificationToken.delete({
-      where: {
-        id: existingToken.id,
-      },
-    });
+  const deleteToken = prisma.verificationToken.delete({
+    where: {
+      id: existingToken.id,
+    },
+  });
 
   await prisma.$transaction([confirmEmailAccount, deleteToken]);
 
