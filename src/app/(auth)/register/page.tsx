@@ -29,11 +29,11 @@ const RegisterPage = () => {
     },
   });
 
-  const submit = () => {};
+  const signUpHandler = () => {};
 
   return (
     <div className="max-w-md rounded-lg border border-gray-300 p-6 shadow-sm max-md:mx-auto">
-      <form onSubmit={handleSubmit(submit)} className="space-y-4">
+      <form onSubmit={handleSubmit(signUpHandler)} className="space-y-4">
         <div className="mb-8">
           <h3 className="text-3xl font-extrabold text-gray-900">Sign Up</h3>
         </div>
