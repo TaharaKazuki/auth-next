@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { signUpAction } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +19,7 @@ const RegisterPage = () => {
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSchemaType>({
@@ -29,7 +31,19 @@ const RegisterPage = () => {
     },
   });
 
-  const signUpHandler = () => {};
+  const signUpHandler = (values: SignUpSchemaType) => {
+    setError('');
+    setSuccess('');
+
+    startTransition(() => {
+      signUpAction(values).then((data) => {
+        console.info(data);
+        setError(data.error!);
+        setSuccess(data.success!);
+        reset();
+      });
+    });
+  };
 
   return (
     <div className="max-w-md rounded-lg border border-gray-300 p-6 shadow-sm max-md:mx-auto">

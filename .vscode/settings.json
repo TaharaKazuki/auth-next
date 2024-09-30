@@ -22,7 +22,8 @@
     "neondatabase",
     "nextjs",
     "signin",
-    "tailwindcss"
+    "tailwindcss",
+    "uuidv"
   ],
   "tailwindCSS.experimental.classRegex": [
     ["ctl\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
