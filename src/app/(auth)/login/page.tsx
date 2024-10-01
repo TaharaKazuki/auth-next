@@ -134,6 +134,7 @@ const LoginPage = () => {
           <div className="mt-8">
             <Button
               type="submit"
+              disabled={isPending}
               className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white"
             >
               Log In
