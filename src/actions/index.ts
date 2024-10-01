@@ -1,9 +1,16 @@
 'use server';
 
 import bcrypt from 'bcryptjs';
+import { AuthError } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-import { SignUpSchema, SignUpSchemaType } from '@/config/schema';
+import { signIn } from '@/auth';
+import {
+  SignInSchemaType,
+  SignInScheme,
+  SignUpSchema,
+  SignUpSchemaType,
+} from '@/config/schema';
 import { sendVerificationEmail } from '@/helpers';
 import prisma from '@/prisma';
 
@@ -124,4 +131,69 @@ export const verifyEmailAction = async (token: string | null) => {
   return {
     success: 'Email verified',
   };
+};
+
+export const signInAction = async (formValues: SignInSchemaType) => {
+  const validateFields = SignInScheme.safeParse(formValues);
+
+  if (!validateFields.success) {
+    return {
+      error: 'Invalid Fields',
+    };
+  }
+
+  const { email, password } = validateFields.data;
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+
+  if (!existingUser || !existingUser.email) {
+    return {
+      error: 'Email does not exist',
+    };
+  }
+
+  if (!(await bcrypt.compare(password, existingUser.password!))) {
+    return {
+      error: 'Invalid password',
+    };
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(
+      existingUser.email
+    );
+    await sendVerificationEmail(
+      verificationToken.email,
+      verificationToken.token
+    );
+
+    return {
+      success: 'Confirmation email sent',
+    };
+  }
+
+  try {
+    await signIn('credentials', {
+      email,
+      password,
+      redirectTo: '/users',
+    });
+    return {
+      success: 'Successfully logged in',
+    };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CallbackRouteError' || 'CredentialsSignin':
+          return {
+            error: 'Invalid credentials',
+          };
+
+        default:
+          return {
+            error: 'Something went wrong',
+          };
+      }
+    }
+    throw error;
+  }
 };
