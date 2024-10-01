@@ -1,16 +1,16 @@
 'use client';
 
+import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ResetSchema, ResetSchemaType } from '@/config/schema';
 import { useToast } from '@/hooks/use-toast';
-import { ErrorMessage } from '@hookform/error-message';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 const ResetPasswordPage = () => {
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,6 @@ const ResetPasswordPage = () => {
 
   const {
     register,
-    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<ResetSchemaType>({
@@ -44,7 +43,7 @@ const ResetPasswordPage = () => {
         title: success,
       });
     }
-  }, [success]);
+  }, [success, toast]);
 
   useEffect(() => {
     if (error) {
@@ -53,12 +52,12 @@ const ResetPasswordPage = () => {
         variant: 'destructive',
       });
     }
-  }, [error]);
+  }, [error, toast]);
 
   return (
     <Card className="w-[400px]">
       <CardHeader className="mb-2">
-        <CardTitle className="text-gray-900 text-3xl font-extrabold">
+        <CardTitle className="text-3xl font-extrabold text-gray-900">
           Password Reset
         </CardTitle>
       </CardHeader>
@@ -72,13 +71,13 @@ const ResetPasswordPage = () => {
             placeholder="Please enter your email here."
             type="email"
             {...register('email')}
-            className="w-full text-sm text-gray-800 border border-gray-300 px-4 py-3 rounded-lg outline-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-blue-500"
           />
           <ErrorMessage
             errors={errors}
             name="email"
             render={({ message }) => (
-              <p className="text-red-700 mt-2 text-sm font-bold text-left w-full">
+              <p className="mt-2 w-full text-left text-sm font-bold text-red-700">
                 {message}
               </p>
             )}
@@ -89,10 +88,10 @@ const ResetPasswordPage = () => {
           >
             Reset Password
           </Button>
-          <p className="text-sm mt-8 flex justify-end text-gray-950">
+          <p className="mt-8 flex justify-end text-sm text-gray-950">
             <Link
               href={'/login'}
-              className="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap"
+              className="ml-1 whitespace-nowrap font-semibold text-blue-600 hover:underline"
             >
               Back to login
             </Link>
