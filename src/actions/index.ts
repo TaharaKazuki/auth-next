@@ -161,6 +161,7 @@ export const signInAction = async (formValues: SignInSchemaType) => {
     const verificationToken = await generateVerificationToken(
       existingUser.email
     );
+
     await sendVerificationEmail(
       verificationToken.email,
       verificationToken.token
@@ -177,25 +178,25 @@ export const signInAction = async (formValues: SignInSchemaType) => {
       password,
       redirectTo: '/users',
     });
+
     return {
       success: 'Successfully logged in',
     };
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CallbackRouteError':
-        case 'CredentialsSignin':
+        case 'CallbackRouteError' || 'CredentialsSignin':
           return {
             error: 'Invalid credentials',
           };
+
         default:
           return {
-            error: 'Something went wrong during sign-in',
+            error: 'Something went wrong',
           };
       }
     }
-    return {
-      error: 'An unexpected error occurred',
-    };
+
+    throw error;
   }
 };

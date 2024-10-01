@@ -23,9 +23,8 @@ export const {
     },
     async signIn({ user }) {
       const { id } = user;
-      const existingUser = await prisma.user.findUnique({
-        where: { id },
-      });
+      const existingUser = await prisma.user.findUnique({ where: { id } });
+
       if (!existingUser?.emailVerified) return false;
       return true;
     },

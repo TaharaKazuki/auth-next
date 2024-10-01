@@ -40,11 +40,11 @@ const LoginPage = () => {
     startTransition(() => {
       signInAction(values)
         .then((data) => {
-          if (data.error) {
+          if (data?.error) {
             reset();
             setError(data.error);
           }
-          if (data.success) {
+          if (data?.success) {
             reset();
             setSuccess(data.success);
           }
