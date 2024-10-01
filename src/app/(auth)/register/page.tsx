@@ -14,8 +14,8 @@ import { SignUpSchema, SignUpSchemaType } from '@/config/schema';
 import { useToast } from '@/hooks/use-toast';
 
 const RegisterPage = () => {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
@@ -34,8 +34,8 @@ const RegisterPage = () => {
   });
 
   const signUpHandler = (values: SignUpSchemaType) => {
-    setError('');
-    setSuccess('');
+    setError(null);
+    setSuccess(null);
 
     startTransition(() => {
       signUpAction(values).then((data) => {
@@ -48,7 +48,7 @@ const RegisterPage = () => {
   };
 
   useEffect(() => {
-    if (success !== '') {
+    if (success) {
       toast({
         title: success,
       });
@@ -56,7 +56,7 @@ const RegisterPage = () => {
   }, [success, toast]);
 
   useEffect(() => {
-    if (error !== '') {
+    if (error) {
       toast({
         title: error,
         variant: 'destructive',
