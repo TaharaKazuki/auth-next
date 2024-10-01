@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { AuthError } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-import { signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 import {
   SignInSchemaType,
   SignInScheme,
@@ -199,4 +199,10 @@ export const signInAction = async (formValues: SignInSchemaType) => {
 
     throw error;
   }
+};
+
+export const logoutAction = async () => {
+  await signOut({
+    redirectTo: '/login',
+  });
 };

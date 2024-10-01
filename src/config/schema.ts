@@ -24,3 +24,17 @@ export const SignInScheme = z.object({
 });
 
 export type SignInSchemaType = z.infer<typeof SignInScheme>;
+
+export const ResetSchema = z.object({
+  email: z.string().email({
+    message: 'Email is required',
+  }),
+});
+
+export type ResetSchemaType = z.infer<typeof ResetSchema>;
+
+export const NewPasswordSchema = z.object({
+  password: z.string().min(6, {
+    message: 'Password has be to minimum 6 characters',
+  }),
+});
