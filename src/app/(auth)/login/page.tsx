@@ -124,7 +124,7 @@ const LoginPage = () => {
           <div className="mt-2 flex flex-wrap items-center justify-end gap-4">
             <div className="text-sm">
               <Link
-                href={'/rest-password'}
+                href={'/reset-password'}
                 className="font-semibold text-blue-700 hover:underline"
               >
                 Forgot your password

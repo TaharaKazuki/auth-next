@@ -1,3 +1,5 @@
+'use client';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -56,15 +58,18 @@ const ResetPasswordPage = () => {
   return (
     <Card className="w-[400px]">
       <CardHeader className="mb-2">
-        <CardTitle className="text-3xl font-extrabold text-gray-900">
+        <CardTitle className="text-gray-900 text-3xl font-extrabold">
           Password Reset
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(handleResetPassword)}>
+        <form
+          onSubmit={handleSubmit(handleResetPassword)}
+          className="space-y-4"
+        >
           <Input
             id="email"
-            placeholder="Please enter your email here"
+            placeholder="Please enter your email here."
             type="email"
             {...register('email')}
             className="w-full text-sm text-gray-800 border border-gray-300 px-4 py-3 rounded-lg outline-blue-500"
