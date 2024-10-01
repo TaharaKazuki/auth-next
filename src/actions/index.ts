@@ -13,7 +13,7 @@ import {
   SignUpSchema,
   SignUpSchemaType,
 } from '@/config/schema';
-import { sendVerificationEmail } from '@/helpers';
+import { sendPasswordResetEmail, sendVerificationEmail } from '@/helpers';
 import prisma from '@/prisma';
 
 const generateVerificationToken = async (email: string) => {
@@ -228,4 +228,33 @@ export const resetPasswordAction = async (formValues: ResetSchemaType) => {
       error: 'Email not found',
     };
   }
+
+  const token = uuidv4();
+  const expires = new Date(new Date().getTime() + 60 * 60 * 1000);
+  const existingToken = await prisma.passwordResetToken.findFirst({
+    where: { email },
+  });
+
+  if (existingToken) {
+    await prisma.passwordResetToken.delete({
+      where: { id: existingToken.id },
+    });
+  }
+
+  const passwordResetToken = await prisma.passwordResetToken.create({
+    data: {
+      email,
+      token,
+      expires,
+    },
+  });
+
+  await sendPasswordResetEmail(
+    passwordResetToken.email,
+    passwordResetToken.token
+  );
+
+  return {
+    success: 'Reset email send! Please check your inbox',
+  };
 };
