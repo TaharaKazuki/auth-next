@@ -73,7 +73,11 @@ export const signUpAction = async (formValues: SignUpSchemaType) => {
   };
 };
 
-export const verifyEmail = async (token: string) => {
+export const verifyEmailAction = async (token: string | null) => {
+  if (!token)
+    return {
+      error: 'Query Token does not exist',
+    };
   const existingToken = await prisma.verificationToken.findUnique({
     where: { token },
   });
