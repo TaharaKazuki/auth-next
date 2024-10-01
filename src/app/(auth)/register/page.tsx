@@ -3,7 +3,7 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { signUpAction } from '@/actions';
@@ -11,11 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SignUpSchema, SignUpSchemaType } from '@/config/schema';
+import { useToast } from '@/hooks/use-toast';
 
 const RegisterPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
 
   const {
     register,
@@ -44,6 +46,23 @@ const RegisterPage = () => {
       });
     });
   };
+
+  useEffect(() => {
+    if (success !== '') {
+      toast({
+        title: success,
+      });
+    }
+  }, [success, toast]);
+
+  useEffect(() => {
+    if (error !== '') {
+      toast({
+        title: error,
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
 
   return (
     <div className="max-w-md rounded-lg border border-gray-300 p-6 shadow-sm max-md:mx-auto">
