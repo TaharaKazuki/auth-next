@@ -38,3 +38,5 @@ export const NewPasswordSchema = z.object({
     message: 'Password has be to minimum 6 characters',
   }),
 });
+
+export type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;
