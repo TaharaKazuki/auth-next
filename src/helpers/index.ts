@@ -14,3 +14,14 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Please Click <a href="${linkToConfirm}">here</a> to confirm your email</p>`,
   });
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const resetPasswordLink = `${getDomain}/new-password?token=${token}`;
+
+  await resend.emails.send({
+    from: process.env.FROM_EMAIL_FIELD || 'onboarding@resend.dev',
+    to: email,
+    subject: 'Please reset your password here.',
+    html: `<p>Please click <a href="${resetPasswordLink}">here</a> to reset your password</p>`,
+  });
+};

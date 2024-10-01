@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { signIn, signOut } from '@/auth';
 import {
+  ResetSchema,
+  ResetSchemaType,
   SignInSchemaType,
   SignInScheme,
   SignUpSchema,
@@ -205,4 +207,25 @@ export const logoutAction = async () => {
   await signOut({
     redirectTo: '/login',
   });
+};
+
+export const resetPasswordAction = async (formValues: ResetSchemaType) => {
+  const validateFields = ResetSchema.safeParse(formValues);
+
+  if (!validateFields.data) {
+    return {
+      error: 'Invalid fields',
+    };
+  }
+
+  const { email } = validateFields.data;
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!existingUser) {
+    return {
+      error: 'Email not found',
+    };
+  }
 };
