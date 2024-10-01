@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { signIn, signOut } from '@/auth';
 import {
+  NewPasswordSchema,
+  NewPasswordSchemaType,
   ResetSchema,
   ResetSchemaType,
   SignInSchemaType,
@@ -256,5 +258,75 @@ export const resetPasswordAction = async (formValues: ResetSchemaType) => {
 
   return {
     success: 'Reset email send! Please check your inbox',
+  };
+};
+
+export const newPasswordAction = async (
+  formValues: NewPasswordSchemaType,
+  token: string
+) => {
+  if (!token) {
+    return {
+      error: 'Token is not found!',
+    };
+  }
+
+  const validateFields = NewPasswordSchema.safeParse(formValues);
+
+  if (!validateFields.success) {
+    return {
+      error: 'Invalid fields!',
+    };
+  }
+
+  const { password } = validateFields.data;
+
+  const existingToken = await prisma.passwordResetToken.findUnique({
+    where: { token },
+  });
+
+  if (!existingToken) {
+    return {
+      error: 'Invalid token',
+    };
+  }
+
+  const hasTokenExpired = new Date(existingToken.expires) < new Date();
+
+  if (hasTokenExpired) {
+    return {
+      error: 'Token is expired',
+    };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: existingToken.email,
+    },
+  });
+
+  if (!existingUser) {
+    return {
+      error: 'User email is not presend! Please try again',
+    };
+  }
+
+  const hashPassword = await bcrypt.hash(password, 10);
+
+  await prisma.user.update({
+    where: { id: existingToken.id },
+    data: {
+      password: hashPassword,
+    },
+  });
+
+  await prisma.passwordResetToken.delete({
+    where: {
+      id: existingToken.id,
+    },
+  });
+
+  return {
+    success: 'Your password is updated successfully!',
   };
 };
