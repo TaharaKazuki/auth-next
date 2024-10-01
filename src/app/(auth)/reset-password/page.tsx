@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { resetPasswordAction } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,7 +35,16 @@ const ResetPasswordPage = () => {
     setError(null);
     setSuccess(null);
 
-    startTransition(() => {});
+    startTransition(() => {
+      resetPasswordAction(values).then((data) => {
+        if (data.error) {
+          setError(data.error);
+        }
+        if (data.success) {
+          setSuccess(data.success);
+        }
+      });
+    });
   };
 
   useEffect(() => {
@@ -84,6 +94,7 @@ const ResetPasswordPage = () => {
           />
           <Button
             type="submit"
+            disabled={isPending}
             className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white"
           >
             Reset Password
