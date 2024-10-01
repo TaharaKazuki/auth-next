@@ -3,21 +3,26 @@
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { signInAction } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SignInSchemaType, SignInScheme } from '@/config/schema';
+import { useToast } from '@/hooks/use-toast';
 
 const LoginPage = () => {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const { toast } = useToast();
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm<SignInSchemaType>({
@@ -28,7 +33,44 @@ const LoginPage = () => {
     },
   });
 
-  const signInHandler = () => {};
+  const signInHandler = (values: SignInSchemaType) => {
+    setError(null);
+    setSuccess(null);
+
+    startTransition(() => {
+      signInAction(values)
+        .then((data) => {
+          if (data.error) {
+            reset();
+            setError(data.error);
+          }
+          if (data.success) {
+            reset();
+            setSuccess(data.success);
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        });
+    });
+  };
+
+  useEffect(() => {
+    if (success) {
+      toast({
+        title: success,
+      });
+    }
+  }, [toast, success]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: error,
+        variant: 'destructive',
+      });
+    }
+  }, [toast, error]);
 
   return (
     <div className="max-w-md rounded-lg border border-gray-300 p-6 shadow-sm max-md:mx-auto">
