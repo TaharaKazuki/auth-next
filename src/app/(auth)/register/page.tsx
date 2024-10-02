@@ -39,7 +39,6 @@ const RegisterPage = () => {
 
     startTransition(() => {
       signUpAction(values).then((data) => {
-        console.info(data);
         setError(data.error!);
         setSuccess(data.success!);
         reset();

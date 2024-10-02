@@ -75,7 +75,6 @@ export const signUpAction = async (formValues: SignUpSchemaType) => {
   });
 
   const createVerificationToken = await generateVerificationToken(email);
-  console.info(createVerificationToken);
 
   await sendVerificationEmail(email, createVerificationToken.token);
 
