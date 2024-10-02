@@ -267,7 +267,7 @@ export const newPasswordAction = async (
 ) => {
   if (!token) {
     return {
-      error: 'Token is not found!',
+      error: 'Token is not found !',
     };
   }
 
@@ -275,7 +275,7 @@ export const newPasswordAction = async (
 
   if (!validateFields.success) {
     return {
-      error: 'Invalid fields!',
+      error: 'Invalid fields !',
     };
   }
 
@@ -313,18 +313,20 @@ export const newPasswordAction = async (
 
   const hashPassword = await bcrypt.hash(password, 10);
 
-  await prisma.user.update({
+  const confirmPassword = prisma.user.update({
     where: { id: existingUser.id },
     data: {
       password: hashPassword,
     },
   });
 
-  await prisma.passwordResetToken.delete({
+  const deleteToken = prisma.passwordResetToken.delete({
     where: {
       id: existingToken.id,
     },
   });
+
+  await prisma.$transaction([confirmPassword, deleteToken]);
 
   return {
     success: 'Your password is updated successfully!',
