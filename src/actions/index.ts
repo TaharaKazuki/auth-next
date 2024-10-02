@@ -189,7 +189,8 @@ export const signInAction = async (formValues: SignInSchemaType) => {
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CallbackRouteError' || 'CredentialsSignin':
+        case 'CallbackRouteError':
+        case 'CredentialsSignin':
           return {
             error: 'Invalid credentials',
           };
