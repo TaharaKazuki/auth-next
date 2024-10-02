@@ -1,3 +1,7 @@
+import { Suspense } from 'react';
+
+import LoadingPage from './loading';
+
 /* eslint-disable @next/next/no-img-element */
 function AuthLayout({
   children,
@@ -15,7 +19,7 @@ function AuthLayout({
               className="mx-auto block size-full object-cover max-md:w-4/5"
             />
           </div>
-          {children}
+          <Suspense fallback={<LoadingPage />}>{children}</Suspense>
         </div>
       </div>
     </div>
