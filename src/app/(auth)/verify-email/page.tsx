@@ -7,8 +7,8 @@ import { verifyEmailAction } from '@/actions';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 const VerifyEmailPage = () => {
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,7 +26,7 @@ const VerifyEmailPage = () => {
       .then((data) => {
         if (data.success) {
           setSuccess(data.success);
-          router.push('/login');
+          return router.push('/login');
         }
         setError(data.error || 'error');
       })
