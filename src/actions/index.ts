@@ -314,7 +314,7 @@ export const newPasswordAction = async (
   const hashPassword = await bcrypt.hash(password, 10);
 
   await prisma.user.update({
-    where: { id: existingToken.id },
+    where: { id: existingUser.id },
     data: {
       password: hashPassword,
     },

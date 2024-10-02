@@ -4,13 +4,15 @@ import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { newPasswordAction } from '@/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { NewPasswordSchema, NewPasswordSchemaType } from '@/config/schema';
+import { useToast } from '@/hooks/use-toast';
 
 const NewPasswordPage = () => {
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +21,7 @@ const NewPasswordPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
+  const { toast } = useToast();
 
   const {
     register,
@@ -31,7 +34,39 @@ const NewPasswordPage = () => {
     },
   });
 
-  const handleSetNewPassword = () => {};
+  const handleSetNewPassword = (values: NewPasswordSchemaType) => {
+    setError(null);
+    setSuccess(null);
+
+    startTransition(() => {
+      newPasswordAction(values, token!).then((data) => {
+        if (data.error) {
+          setError(data.error);
+        }
+        if (data.success) {
+          setSuccess(data.success);
+          router.push('/login');
+        }
+      });
+    });
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: error,
+        variant: 'destructive',
+      });
+    }
+  }, [error, toast]);
+
+  useEffect(() => {
+    if (success) {
+      toast({
+        title: success,
+      });
+    }
+  }, [success, toast]);
 
   return (
     <Card className="w-[400px]">
@@ -63,6 +98,7 @@ const NewPasswordPage = () => {
           />
           <Button
             type="submit"
+            disabled={isPending}
             className="h-10 w-full rounded-md bg-neutral-900 font-medium text-white"
           >
             Change Password
